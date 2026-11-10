@@ -2,130 +2,263 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>보안 코드 챌린지</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Security Verification</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to bottom, #3498DB, #2C3E50);
       margin: 0;
-      padding: 0;
+      padding: 20px;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      color: #ECF0F1;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(
+        135deg, #f8fafc, #e8eef7
+      );
+      color: #1e293b;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      padding: 32px 26px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 35px rgba(0,0,0,.07);
+      text-align: center;
+    }
+
+    .shield {
+      font-size: 35px;
+      margin-bottom: 15px;
     }
 
     h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-      color: #ECF0F1; /* Updated color for the heading */
+      font-size: 24px;
+      margin: 0 0 10px;
     }
 
-    p {
-      font-size: 18px;
-      margin-bottom: 40px;
+    .description {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #64748b;
+      margin-bottom: 25px;
     }
 
-    #captcha-container {
-      width: 200px;
-      height: 120px;
+    .verification-box {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      font-weight: bold;
-      color: #ECF0F1;
-      background-color: #3498DB;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    #captcha-form {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    #captcha-input {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: 1px solid #3498DB;
-      border-radius: 5px;
-      font-size: 16px;
-      box-sizing: border-box;
-      color: #2C3E50;
-      transition: border-color 0.3s;
-    }
-
-    #captcha-submit {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      background-color: #E74C3C; /* Updated button color */
-      color: #ECF0F1;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #f8fafc;
       cursor: pointer;
-      transition: background-color 0.3s;
+      text-align: left;
     }
 
-    #captcha-submit:hover {
-      background-color: #C0392B; /* Updated button color on hover */
+    .verification-box input {
+      width: 22px;
+      height: 22px;
+      accent-color: #16a34a;
     }
 
-    #captcha-message {
-      color: #E74C3C;
+    .verification-box span {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .captcha-code {
+      margin: 20px 0 12px;
+      padding: 16px;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 5px;
+      background: #eff6ff;
+      border: 1px dashed #93c5fd;
+      border-radius: 10px;
+      user-select: none;
+    }
+
+    .captcha-input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      font-size: 16px;
       text-align: center;
-      margin-top: 10px;
-      display: none;
+      outline: none;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+    .captcha-input:focus {
+      border-color: #2563eb;
+    }
+
+    .button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 15px;
+      border: none;
+      border-radius: 9px;
+      background: #2563eb;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .button:hover:not(:disabled) {
+      background: #1d4ed8;
+    }
+
+    .button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .footer {
+      margin-top: 24px;
+      color: #94a3b8;
+      font-size: 12px;
     }
   </style>
 </head>
+
 <body>
-  <h1>보안 코드 챌린지</h1>
-  <p>당신이 인간임을 증명하기 위해 다음 과제를 해결하세요.</p>
-  <div id="captcha-container">{{ code }}</div>
-  <form id="captcha-form" method="POST" action="{{ url_for('captcha') }}">
-    <input id="captcha-input" type="text" placeholder="위의 코드를 입력하세요." name="code" required>
-    <input type="hidden" name="web" value="{{ request.args.get('web') }}">
-    <br>
-    <button id="captcha-submit" type="submit">제출</button>
-  </form>
-  <p id="captcha-message"></p>
+
+  <main class="card">
+
+    <div class="shield" aria-hidden="true">
+      🛡️
+    </div>
+
+    <h1>Security Verification</h1>
+
+    <p class="description">
+      Please complete this quick security
+      check to continue safely.
+    </p>
+
+    <form
+      id="captcha-form"
+      method="POST"
+      action="{{ url_for('captcha') }}"
+    >
+
+      <input
+        type="hidden"
+        name="web"
+        value="{{ request.args.get('web', '') }}"
+      >
+
+      <label class="verification-box">
+        <input
+          type="checkbox"
+          id="human-check"
+          required
+        >
+        <span>I'm not a robot</span>
+      </label>
+
+      <div class="captcha-code">
+        {{ code }}
+      </div>
+
+      <input
+        class="captcha-input"
+        id="captcha-input"
+        type="text"
+        name="code"
+        placeholder="Enter the security code"
+        autocomplete="off"
+        spellcheck="false"
+        required
+      >
+
+      <p class="status" id="status"
+         role="status" aria-live="polite">
+        Select the checkbox and enter the code.
+      </p>
+
+      <button
+        class="button"
+        type="submit"
+        id="submit-btn"
+        disabled
+      >
+        Continue Securely
+      </button>
+
+    </form>
+
+    <div class="footer">
+      Secure Verification
+    </div>
+
+  </main>
+
   <script>
-    // 사용자 입력이 코드와 일치하는지 확인
-    var captchaForm = document.getElementById('captcha-form');
-    var errorMessage = document.getElementById('captcha-message');
+    const checkbox =
+      document.getElementById("human-check");
 
-    captchaForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      var captchaInput = document.getElementById('captcha-input');
+    const input =
+      document.getElementById("captcha-input");
 
-      if (captchaInput.value == "{{ code }}") {
-        // 양식 제출
-        captchaForm.submit();
-      } else {
-        errorMessage.innerText = '죄송합니다. 입력한 코드가 올바르지 않습니다. 다시 시도해주세요.';
-        errorMessage.style.display = 'block'; // 오류 메시지 표시
-        captchaInput.value = '';
+    const button =
+      document.getElementById("submit-btn");
+
+    const status =
+      document.getElementById("status");
+
+    const form =
+      document.getElementById("captcha-form");
+
+    function updateButton() {
+      button.disabled = !(
+        checkbox.checked &&
+        input.value.trim().length > 0
+      );
+
+      status.textContent = button.disabled
+        ? "Select the checkbox and enter the code."
+        : "Ready to verify.";
+    }
+
+    checkbox.addEventListener(
+      "change", updateButton
+    );
+
+    input.addEventListener(
+      "input", updateButton
+    );
+
+    form.addEventListener("submit", function(e) {
+      if (!checkbox.checked ||
+          !input.value.trim()) {
+        e.preventDefault();
+        return;
       }
+
+      button.disabled = true;
+      button.textContent = "Verifying...";
     });
   </script>
+
 </body>
 </html>
